@@ -1,0 +1,23 @@
+{
+  "name": "forum-web",
+  "version": "1.0.0",
+  "description": "十次方前端",
+  "author": "doraqixiaozi",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "element-ui": "^2.13.1",
+    "js-cookie": "^2.2.0",
+    "nuxt": "^2.0.0",
+    "vue-infinite-scroll": "^2.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
