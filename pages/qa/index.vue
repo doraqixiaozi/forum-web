@@ -4,7 +4,7 @@
       <div class="wrapper">
         <ul class="fl sui-nav nav-tabs navbar-dark">
           <li class="active" @click.prevent="getProblemByTop($event)"><a data-toggle="tab">首页</a></li>
-          <li v-for="item in label" @click.prevent="getProblemByLabel(item,$event)"><a  data-toggle="tab">{{item.labelname}}</a>
+          <li v-for="item in label" @click.prevent="getProblemByLabel(item,$event)"><a data-toggle="tab">{{item.labelname}}</a>
           </li>
         </ul>
         <div class="clearfix"></div>
@@ -17,9 +17,9 @@
           <div id="index" class="tab-pane active">
             <div class="tab-bottom-line">
               <ul class="sui-nav nav-tabs">
-                <li class="active" @click.prevent="getNewReply"><a  data-toggle="tab">最新回答</a></li>
-                <li @click.prevent="getHotReply"><a  data-toggle="tab">热门回答</a></li>
-                <li @click.prevent="getWaitReply"><a  data-toggle="tab">等待回答</a></li>
+                <li class="active" @click.prevent="getNewReply"><a data-toggle="tab">最新回答</a></li>
+                <li @click.prevent="getHotReply"><a data-toggle="tab">热门回答</a></li>
+                <li @click.prevent="getWaitReply"><a data-toggle="tab">等待回答</a></li>
               </ul>
               <div class="qa-list">
                 <div class="tab-content">
@@ -42,23 +42,24 @@
                         </div>
                         <div class="fl info">
                           <div class="question">
-                            <p class="author"><span
-                              class="name">{{item.replyname}}</span><span>{{item.replytime}}</span></p>
-                            <p class="title"><a @click="goDetail(item.id,labelMap.get(item.labelid))" style="cursor:pointer">{{item.title}}</a></p>
+                            <p class="author" ><span
+                              class="name" @click="goTalk(item.replyid)" style="cursor: pointer">{{item.replyname}}</span><span>{{item.replytime}}</span></p>
+                            <p class="title"><a @click="goDetail(item.id,labelMap.get(item.labelid))"
+                                                style="cursor:pointer">{{item.title}}</a></p>
                           </div>
                           <div class="other">
                             <ul class="fl sui-tag">
                               <li>{{labelMap.get(item.labelid)}}</li>
                             </ul>
-                            <div class="fr brower">
-                              <p>浏览量 {{item.visits}} | {{item.createtime}} 来自 <a>{{item.nickname }}</a></p>
+                            <div class="fr brower" >
+                              <p>浏览量 {{item.visits}} | {{item.createtime}} 来自 <a @click="goTalk(item.userid)" style="cursor: pointer">{{item.nickname }}</a></p>
                             </div>
                           </div>
                         </div>
                         <div class="clearfix"></div>
                       </li>
-                      <li><a class="sui-btn btn-block btn-share"  @click.prevent="loadMore" v-if="flag">加载更多</a>
-                        <a class="sui-btn btn-block btn-share"  @click.prevent="loadMore" v-if="!flag">人家是有底线的呢</a>
+                      <li><a class="sui-btn btn-block btn-share" @click.prevent="loadMore" v-if="flag">加载更多</a>
+                        <a class="sui-btn btn-block btn-share" @click.prevent="loadMore" v-if="!flag">人家是有底线的呢</a>
                       </li>
                     </ul>
                   </div>
@@ -71,7 +72,7 @@
       <div class="fl right-tag">
         <div class="block-btn">
           <p>今天，有什么问题要和大家分享么?</p>
-          <a class="sui-btn btn-block btn-share" href="./qa-submit.html" target="_blank">发布问题</a>
+         <a class="sui-btn btn-block btn-share" style="cursor:pointer"  @click="checkLogin">发布问题</a>
         </div>
         <div class="hot-tags">
           <div class="head">
@@ -100,7 +101,7 @@
   import '~/assets/css/widget-head-foot.css'
   import '~/assets/css/page-sj-qa-logined.css'
   import labelApi from "../../api/label";
-  import {getUser} from "../../utils/auth";
+  import {getId, getUser} from "../../utils/auth";
   import problemApi from "../../api/problem";
 
   export default {
@@ -121,25 +122,52 @@
         this.label = res.data.data;
         this.label.forEach(item => {
           this.labelMap.set(item.id, item.labelname);
-          console.log(this.labelMap);
+          // console.log(this.labelMap);
         });
       });
       this.fetchData();
     },
     methods: {
-      goDetail(id,labelName){
-        this.$router.push({path: '/qa/detail', query: {id,labelName}})
+      goTalk(id) {
+        if (getUser() == null) {
+          this.$message({
+            message: '请先登录',
+            type: 'warning'
+          });
+          return;
+        }
+        if (id == getId()) {
+          this.$message({
+            message: '您不能与自己聊天',
+            type: 'warning'
+          });
+          return;
+        }
+        this.$router.push({path: `/friend/talk/${id}`});
       },
-      thumb(item){
-       problemApi.thumb(item.id).then(res=>{
-         if (res.data.flag){
-           this.$message({
-             message: '点赞成功',
-             type: 'success'
-           });
-           item.thumbup++;
-         }
-       })
+      checkLogin(){
+        if(!getUser()){
+          this.$message({
+            message: '请先登录',
+            type: 'warning'
+          });
+          return;
+        }
+        this.$router.push({path: '/qa/submit'});
+      },
+      goDetail(id, labelName) {
+        this.$router.push({path: '/qa/detail', query: {id, labelName}})
+      },
+      thumb(item) {
+        problemApi.thumb(item.id).then(res => {
+          if (res.data.flag) {
+            this.$message({
+              message: '点赞成功',
+              type: 'success'
+            });
+            item.thumbup++;
+          }
+        })
       },
       loadMore() {
         if (this.order == 'newR') {

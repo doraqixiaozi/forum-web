@@ -6,7 +6,7 @@
         <h2>{{problem.title}}</h2>
         <p>
           <span class="tag">{{labelName}}</span>
-          <span class="author">{{problem.nickname}}</span>
+          <span class="author" @click="goTalk(item.userid)" style="cursor: pointer">{{problem.nickname}}</span>
           <span>{{problem.createtime}}</span>
         </p>
       </div>
@@ -35,7 +35,7 @@
               </div>
 
               <div class="myanswer pull-right">
-                <a>{{item.nickname}}</a>
+                <a @click="goTalk(item.userid)" style="cursor: pointer">{{item.nickname}}</a>
               </div>
               <div class="clearfix"></div>
             </div>
@@ -123,6 +123,23 @@
       });
     },
     methods: {
+      goTalk(id) {
+        if (getUser() == null) {
+          this.$message({
+            message: '请先登录',
+            type: 'warning'
+          });
+          return;
+        }
+        if (id == getId()) {
+          this.$message({
+            message: '您不能与自己聊天',
+            type: 'warning'
+          });
+          return;
+        }
+        this.$router.push({path: `/friend/talk/${id}`});
+      },
       submit() {
         if (!getUser()) {
           this.$message({

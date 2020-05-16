@@ -1,6 +1,6 @@
 import request from '@/utils/request'
-const group_name = 'user'
-const api_name = 'user'
+const group_name = 'user';
+const api_name = 'user';
 export default {
   sendsms(mobile) {
     return request({
@@ -38,6 +38,12 @@ export default {
       url: `/${group_name}/${api_name}/saveinfo`,
       method: 'put',
       data: user
+    })
+  },
+  findById(id) {
+    return request({
+      url: `/${group_name}/${api_name}/${id}`,
+      method: 'get'
     })
   }
 }

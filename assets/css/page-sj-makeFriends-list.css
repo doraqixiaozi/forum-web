@@ -328,6 +328,8 @@ i {
   margin-top: 10px;
   background-color: #fff;
   border: 1px solid #eeeeee;
+  overflow: scroll;
+  height: 455px;
 }
 
 .friend-list h4 {

@@ -24,16 +24,11 @@
                   </div>
                   <div class="words">
                     <h3 v-text="item.title" @click="expend(item.id)"></h3>
-                    <h5 class="author">
+                    <h5 class="author" @click="goTalk(item.userid)">
                       <div class="fl">
                         <span class="authorName"> <img :src="item.avatar" alt=""/> {{item.nickname}} </span>
                         <span v-text="item.createtime"></span>
                       </div>
-                    <!--  <div class="fr attention">
-                        <span class="attentionText">关注</span>
-                        <span class="beforeclose"> <i class="fa fa-times delete" aria-hidden="true"></i> <i
-                          class="nolike">不感兴趣</i> </span>
-                      </div>-->
                       <div class="clearfix"></div>
                     </h5>
                   </div>
@@ -239,6 +234,7 @@
   import articleApi from "../api/article";
   import searchApi from "../api/search";
   import {getUser, getId} from "../utils/auth";
+
   export default {
     data() {
       return {
@@ -246,7 +242,7 @@
         article: [],
         page: {index: 1, size: 5},
         flag: true,
-        searchMap:{}
+        searchMap: {}
       }
     },
     created() {
@@ -259,8 +255,25 @@
 
     },
     methods: {
-      toSubmit(){
-        if (getUser()==null){
+      goTalk(id) {
+        if (getUser() == null) {
+          this.$message({
+            message: '请先登录',
+            type: 'warning'
+          });
+          return;
+        }
+        if (id == getId()) {
+          this.$message({
+            message: '您不能与自己聊天',
+            type: 'warning'
+          });
+          return;
+        }
+        this.$router.push({path: `/friend/talk/${id}`});
+      },
+      toSubmit() {
+        if (getUser() == null) {
           this.$message({
             message: '请先登录',
             type: 'warning'
@@ -269,26 +282,26 @@
         }
         this.$router.push({path: '/article/submit', query: {}});
       },
-      getHotArticle(event){
-        this.page={index: 1, size: 5};
-        this.searchMap={istop:'1'};
-        this.article=[];
+      getHotArticle(event) {
+        this.page = {index: 1, size: 5};
+        this.searchMap = {istop: '1'};
+        this.article = [];
         this.loadMore();
         event.target.parentNode.parentNode.childNodes.forEach(node => {
-          if (node.classList){
-          node.classList.remove("active");
+          if (node.classList) {
+            node.classList.remove("active");
           }
         });
         event.target.parentNode.classList.add("active");
       },
       getArticle(item, event) {
-        this.page={index: 1, size: 5};
-        this.searchMap.channelid=item.id;
-        this.searchMap.istop=null;
-        this.article=[];
+        this.page = {index: 1, size: 5};
+        this.searchMap.channelid = item.id;
+        this.searchMap.istop = null;
+        this.article = [];
         this.loadMore();
         event.target.parentNode.parentNode.childNodes.forEach(node => {
-          if (node.classList){
+          if (node.classList) {
             node.classList.remove("active");
           }
         });
@@ -305,7 +318,7 @@
         this.$router.push({path: '/article', query: {id}})
       },
       loadMore() {
-        this.searchMap.state='1';
+        this.searchMap.state = '1';
         articleApi.search(this.page.index, this.page.size, this.searchMap).then(res => {
           this.article = this.article.concat(res.data.data.rows);
           if (this.page.index * this.page.size >= res.data.data.total) {
@@ -315,9 +328,14 @@
         });
       },
       callMe(key) {
-        searchApi.search(1,100,{key:key}).then(res=>{
-          this.article=[];
+        searchApi.search(1, 100, {key: key}).then(res => {
+          this.article = [];
           this.article = this.article.concat(res.data.data.rows);
+        }).catch(error => {
+          this.$message({
+            message: error,
+            type: 'error'
+          });
         });
       }
 

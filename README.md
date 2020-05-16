@@ -1,6 +1,6 @@
 # forum-web
 
-> 十次方前端
+> 十次方前台前端
 
 ## Build Setup
 

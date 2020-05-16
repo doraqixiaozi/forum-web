@@ -1,12 +1,15 @@
-import request from '@/utils/request'
-const group_name = 'recruit';
-const api_name = 'enterprise';
+import request from "@/utils/request"
+
+const group_name = 'base';
+const api_name = 'city';
 export default {
   getList() {
-    return request({
-      url: `/${group_name}/${api_name}`,
-      method: 'get'
-    })
+    return request(
+      {
+        url: `/${group_name}/${api_name}`,
+        method: 'get'
+      }
+    );
   },
   search(page, size, searchMap) {
     return request({
@@ -42,12 +45,6 @@ export default {
     return request({
       url: `/${group_name}/${api_name}/${id}`,
       method: 'delete'
-    })
-  },
-  hotlist(){
-    return request({
-      url: `/${group_name}/${api_name}/search/hotlist`,
-      method: 'get'
     })
   }
 }

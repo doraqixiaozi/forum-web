@@ -458,18 +458,22 @@ header {
 	box-shadow: 0px 0px 1px 0px #c7c7c7;
 }
 .bubbleDiv .talk-content .talk-rit {
+  width: 100%;
 	float: right;
+  padding-right: 0;
+  margin-top: 10px;
 }
 
 .talk-rit .img {
 	display: inline-block;
 	vertical-align: middle;
-	margin-left: 6px;
+	margin-left: 1%;
 }
 
 .talk-rit .text {
 	display: inline-block;
 	vertical-align: middle;
+  margin-left: 58%;
 }
 
 .talk-rit .text .info {

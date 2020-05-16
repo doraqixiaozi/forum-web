@@ -3,10 +3,11 @@ import request from '@/utils/request';
 const group_name = 'qa';
 const api_name = 'problem';
 export default {
-  list(type, label, page, size) {
+  list(page, size, map) {
     return request({
-      url: `/${group_name}/${api_name}/${type}/${label}/${page}/${size}`,
-      method: 'get'
+      url: `/${group_name}/${api_name}/search/${page}/${size}`,
+      method: 'post',
+      data: map
     })
   },
   searchOrderByCreateTime(page, size, searchMap) {
@@ -40,6 +41,13 @@ export default {
     return request({
       url: `/${group_name}/${api_name}/${id}`,
       method: 'get'
+    })
+  },
+  save(pojo) {
+    return request({
+      url: `/${group_name}/${api_name}`,
+      method: 'post',
+      data: pojo
     })
   }
 }

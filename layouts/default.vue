@@ -17,14 +17,15 @@
               <li>
                 <nuxt-link to="/gathering">活动</nuxt-link>
               </li>
-              <li>
-                <nuxt-link to="/friend">交友</nuxt-link>
-              </li>
-              <li>
-                <nuxt-link to="/spit">吐槽</nuxt-link>
-              </li>
+
+              <!--              <li>-->
+              <!--                <nuxt-link to="/spit">吐槽</nuxt-link>-->
+              <!--              </li>-->
               <li>
                 <nuxt-link to="/recruit">招聘</nuxt-link>
+              </li>
+              <li @click="flag=false">
+                <nuxt-link to="/friend">消息<span class="alert" v-text="''" v-if="flag"></span></nuxt-link>
               </li>
             </ul>
             <form class="sui-form sui-form pull-left">
@@ -55,7 +56,7 @@
         </div>
       </div>
     </header>
-    <nuxt-child ref="child"/>
+    <nuxt-child ref="child" @sendMessage="webSocketSend"/>
     <footer>
       <div class="footer">
         <div class="wrapper">
@@ -130,18 +131,22 @@
   import '~/assets/css/widget-base.css'
   import '~/assets/css/widget-head-foot.css'
   import {removeUser, getUser} from '@/utils/auth'
+  import url from '@/api/webSocket';
 
   export default {
     data() {
       return {
         user: null,
-        key: ''
+        key: '',
+        webSocket: null,
+        flag:false
       }
     }
     , created() {
       let user = getUser();
       if (user != null && user.token != null && user.token != '') {
         this.user = user;
+        this.initWebSocket();
       }
     },
     methods: {
@@ -151,7 +156,31 @@
       },
       doChild() {
         this.$refs.child.callMe(this.key);
-      }
+      },
+      initWebSocket() { //初始化weosocket
+        const wsuri = url;
+        this.websock = new WebSocket(wsuri);
+        this.websock.onmessage = this.webSocketOnMessage;
+        this.websock.onopen = this.webSocketOnOpen;
+        this.websock.onerror = this.webSocketOnError;
+        this.websock.onclose = this.webSocketOnClose;
+      },
+      webSocketOnOpen() { //连接建立之后执行send方法发送数据
+      },
+      webSocketOnError() {//连接建立失败重连
+        this.initWebSocket();
+      },
+      webSocketOnMessage(e) { //数据接收
+        this.flag=true;
+        let redata = JSON.parse(e.data);
+        this.$refs.child.getMessage(redata);
+      },
+      webSocketSend(Data) {//数据发送
+        this.websock.send(JSON.stringify(Data));
+      },
+      webSocketOnClose(e) {  //关闭
+        console.log('断开连接', e);
+      },
     }
   }
 </script>
@@ -159,4 +188,19 @@
   .nuxt-link-exact-active {
     color: coral !important;
   }
+
+  .alert {
+    min-width: 18px;
+    height: 18px;
+    background: red;
+    box-sizing: border-box;
+    color: white;
+    font-size: 10px;
+    text-align: center;
+    line-height: 20px;
+    padding: 0 5px;
+    border-radius: 10px;
+    display: inline-block;
+  }
+
 </style>

@@ -5,7 +5,7 @@
                 <div class="person-baseinfo">
                 <!--头像信息-->
                 <div class="photo">
-                <img src="~/assets/img/widget-myphoto.jpg" alt="" class="person" />
+                <img :src="user==null?'':user.avatar" alt="" class="person" style="width: 120px!important;height: 120px!important;"/>
                 <div class="share">
                 <span><img src="~/assets/img/asset-QQ.png" alt="" width="34" height="28" /></span>
                 <span><img src="~/assets/img/asset-weixin.png" alt="" width="28" height="28" /></span>
@@ -14,7 +14,7 @@
                 </div>
                 <!--文字信息-->
                 <div class="info">
-                <h1>Web爱好者<span class="allinfo"><a href="~/assets/person-myfile.html" target="_blank">查看完整档案</a></span></h1>
+                <h1>{{user==null?'':user.name}}<span class="allinfo"><a href="~/assets/person-myfile.html" target="_blank">查看完整档案</a></span></h1>
                 <ul class="fill">
                 <li> <i class="fa fa-map-marker" aria-hidden="true"></i> <span class="edit-item"> 填写现居城市</span>
                     <form action="" class="sui-form form-inline">
@@ -82,8 +82,13 @@
 import '~/assets/css/page-sj-person-homepage.css'
 import {getUser} from '@/utils/auth'
 export default {
+  data(){
+    return{
+    user: getUser()
+    }
+  },
     created(){
-      console.log(getUser())
+      // console.log(getUser())
         if(!getUser()){
             this.$router.push('/login')
         }
